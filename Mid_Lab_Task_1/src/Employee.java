@@ -1,15 +1,15 @@
-import java.util.Date;
+import java.time.LocalDate;
 
 public class Employee {
     private int id;
     private String name;
-    private Date dateOfBirth;
+    private LocalDate dateOfBirth;
     private String email;
-    private Date joiningDate;
+    private LocalDate joiningDate;
     private int vacationDays;
     private int sickDays;
 
-    public Employee(int id, String name, Date dateOfBirth, String email, Date joiningDate, int vacationDays, int sickDays) {
+    public Employee(int id, String name, LocalDate dateOfBirth, String email, LocalDate joiningDate, int vacationDays, int sickDays) {
         this.id = id;
         this.name = name;
         this.dateOfBirth = dateOfBirth;
@@ -35,11 +35,11 @@ public class Employee {
         this.name = name;
     }
 
-    public Date getDateOfBirth() {
+    public LocalDate getDateOfBirth() {
         return dateOfBirth;
     }
 
-    public void setDateOfBirth(Date dateOfBirth) {
+    public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
 
@@ -51,11 +51,11 @@ public class Employee {
         this.email = email;
     }
 
-    public Date getJoiningDate() {
+    public LocalDate getJoiningDate() {
         return joiningDate;
     }
 
-    public void setJoiningDate(Date joiningDate) {
+    public void setJoiningDate(LocalDate joiningDate) {
         this.joiningDate = joiningDate;
     }
 

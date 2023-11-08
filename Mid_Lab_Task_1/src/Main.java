@@ -1,10 +1,13 @@
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
 import java.util.Date;
 import java.util.*;
 
+
 public class Main {
-    public static void main(String[] args) {
+    public void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
         // Get employee information
@@ -24,7 +27,15 @@ public class Main {
 
 
         // Create employee object
-        Employee employee = (Calendar.getInstance().get(Calendar.YEAR) < 2023) ? new Officer(id, name, dateOfBirth, email, joiningDate) : new Staff(id, name, dateOfBirth, email, joiningDate);
+        //Employee employee = (Calendar.getInstance().get(Calendar.YEAR) < 2023) ? new Officer(id, name, dateOfBirth, email, joiningDate) : new Staff(id, name, dateOfBirth, email, joiningDate);
+        LocalDate currentDate = LocalDate.now();
+        LocalDate employeeDateOfBirth = LocalDate.parse(dateOfBirthStr, formatter);
+        LocalDate employeeJoiningDate = LocalDate.parse(joiningDateStr, formatter);
+
+        Employee employee = (currentDate.getYear() < 2023) ?
+                new Officer(id, name, employeeDateOfBirth, email, employeeJoiningDate) :
+                new Staff(id, name, employeeDateOfBirth, email, employeeJoiningDate);
+
 
         // Calculate leave days
         int vacationDays = calculateVacationDays(employee);
@@ -40,31 +51,70 @@ public class Main {
 
 
         //int daySinceJoining = currentDate.getTime() -employee.getJoiningDate().getTime();
-    }
-    public int calculateVacationDays(Employee employee) {
+    //}
+    public static int calculateVacationDays(Employee employee) {
         // Get current date
         Date currentDate = new Date();
 
         // Calculate number of days since joining date
-        var daysSinceJoining = currentDate.getTime() - employee.getJoiningDate().getTime();
-        daysSinceJoining /= 1000 * 60 * 60 * 24;
+        //long timeSinceJoining = currentDate.toEpochDay() - employee.getJoiningDate().toEpochDay();
+        //int daysSinceJoining = (int) timeSinceJoining;
+
+        //int daysSinceJoining = currentDate.getTime() - employee.getJoiningDate().getTime();
+        //daysSinceJoining /= 1000 * 60 * 60 * 24;
+        long daysSinceJoining = ChronoUnit.DAYS.between((Temporal) employee.getJoiningDate().atStartOfDay(), ((Date) currentDate).toInstant());
+
 
         // Calculate number of days left in the year
-        int daysLeftInYear = currentDate.isLeapYear() ? 366 : 365;
-        daysLeftInYear -= currentDate.getDayOfYear();
+        //int daysLeftInYear = currentDate.isLeapYear() ? 366 : 365;
+        //daysLeftInYear -= currentDate.getDayOfYear();
+
+        class LeapYear {
+
+            public static boolean isLeapYear(int year) {
+                return (year % 4 == 0) && (year % 100 != 0) || (year % 400 == 0);
+            }
+        }
+
+        int currentDateYear = LocalDate.now().getYear();
+        boolean isLeapYear = LeapYear.isLeapYear(currentDateYear);
+        int daysLeftInYear = isLeapYear ? 366 : 365;
+        daysLeftInYear -= LocalDate.now().getDayOfYear();
+
 
         // Calculate vacation days
-        int vacationDays = (daysSinceJoining + 1) * employee.getVacationDays() / daysLeftInYear;
+        int vacationDays = (int) ((daysSinceJoining + 1) * employee.getVacationDays() / daysLeftInYear);
 
         // Round vacation days up or down
         vacationDays = (vacationDays >= 0.5) ? (int) Math.ceil(vacationDays) : (int) Math.floor(vacationDays);
 
         return vacationDays;
+
     }
 
-      public int calculateSickDays(Employee employee) {
+      public static int calculateSickDays(Employee employee) {
         // Calculate sick days in the same way as vacation days
-        int sickDays = (daysSinceJoining + 1) * employee.getSickDays() / daysLeftInYear;
+          //int daysSinceJoining = 0;
+          Date currentDate = new Date();
+          // Calculate number of days since joining date
+         // int daysSinceJoining = Math.toIntExact(currentDate.getTime() - employee.getJoiningDate().getTime());
+          long daysSinceJoining = ChronoUnit.DAYS.between((Temporal) employee.getJoiningDate().atStartOfDay(), ((Date) currentDate).toInstant());
+          daysSinceJoining /= 1000 * 60 * 60 * 24;
+
+
+          class LeapYear {
+
+              public static boolean isLeapYear(int year) {
+                  return (year % 4 == 0) && (year % 100 != 0) || (year % 400 == 0);
+              }
+          }
+
+        int currentDateYear = LocalDate.now().getYear();
+        boolean isLeapYear = LeapYear.isLeapYear(currentDateYear);
+        int daysLeftInYear = isLeapYear ? 366 : 365;
+        daysLeftInYear -= LocalDate.now().getDayOfYear();
+
+        int sickDays = Math.toIntExact((daysSinceJoining + 1) * employee.getSickDays() / daysLeftInYear);
         sickDays = (sickDays >= 0.5) ? (int) Math.ceil(sickDays) : (int) Math.floor(sickDays);
 
         return sickDays;
