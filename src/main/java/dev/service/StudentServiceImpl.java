@@ -1,49 +1,56 @@
 package dev.service;
 
-
+import ch.qos.logback.classic.Level;
 import dev.domain.Student;
+import dev.repository.StudentRepository;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.util.List;
+import java.util.logging.Logger;
 
 @Service
 public class StudentServiceImpl implements StudentService {
 
-    @PersistenceContext
-    private EntityManager entityManager;
+
+
+    @Autowired
+    private StudentRepository studentRepository;
 
     @Override
-    @Transactional
     public List<Student> getAllStudents() {
-        // Implement logic to fetch all students from the database
-        return entityManager.createQuery("SELECT s FROM Student s", Student.class).getResultList();
+        return studentRepository.findAll();
     }
 
     @Override
-    @Transactional
     public Student getStudentById(int id) {
-        // Implement logic to fetch a student by ID from the database
-        return entityManager.find(Student.class, id);
+        return studentRepository.findById((long) id).orElse(null);
     }
 
     @Override
-    @Transactional
     public void updateStudent(Student student) {
-        // Implement logic to update a student in the database
+        studentRepository.save(student);
+    }
 
-        entityManager.merge(student);
+    @Override
+    public void deleteStudent(int id) {
+        studentRepository.deleteById((long) id);
     }
 
     @Override
     @Transactional
-    public void deleteStudent(int id) {
-        // Implement logic to delete a student from the database
-        Student student = entityManager.find(Student.class, id);
-        if (student != null) {
-            entityManager.remove(student);
-        }
+    public void registerStudent(Student student) {
+        // Additional logic if needed
+        studentRepository.save(student);
+
+        Logger logger;
+        Logger.getAnonymousLogger();
+
+
+        //System.out.println("Student registered: " + student);
     }
 }
+
